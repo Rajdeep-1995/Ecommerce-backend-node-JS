@@ -57,7 +57,6 @@ exports.read = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  console.log(req.body);
   try {
     req.body.slug = slugify(req.body.title); //saving slugified title in incoming slug of req.body
     const updateProduct = await Product.findOneAndUpdate(
@@ -72,6 +71,5 @@ exports.update = async (req, res) => {
     res.status(400).json({
       err: error.message,
     });
-    console.log(error);
   }
 };
