@@ -73,3 +73,44 @@ exports.update = async (req, res) => {
     });
   }
 };
+
+// Without pagination
+// exports.listDynemically = async (req, res) => {
+//   try {
+//     const { sort, order, limit } = req.body;
+//     const products = await Product.find({})
+//       .populate("category")
+//       .populate("subs")
+//       .sort([[sort, order]]) // sorted by created or updated and orderd by ascending or descending
+//       .limit(limit)
+//       .exec();
+//     res.json(products);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+// With pagination
+exports.listDynemically = async (req, res) => {
+  try {
+    const { sort, order, page, limit } = req.body;
+    const currentpage = page || 1;
+    const perPageLimit = limit || 3;
+
+    const products = await Product.find({})
+      .skip((currentpage - 1) * perPageLimit) // to skip the per page items as reqested from client
+      .populate("category")
+      .populate("subs")
+      .sort([[sort, order]]) // sorted by created or updated and orderd by ascending or descending
+      .limit(perPageLimit)
+      .exec();
+    res.json(products);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.productsCount = async (req, res) => {
+  let totalCount = await Product.find({}).estimatedDocumentCount().exec();
+  res.json(totalCount);
+};
